@@ -7,6 +7,7 @@ Connect with frontend (React)
 Deploy live
  */
 
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -14,19 +15,10 @@ const mongoose = require("mongoose");
 
 const app = express();
 
-
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Backend Running");
-});
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
-
-mongoose.connect("mongodb+srv://notes:shivamrajnotesapp@cluster0.7o5ewzc.mongodb.net/notesDB?appName=Cluster0")
+mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
 
@@ -35,6 +27,10 @@ const noteSchema = new mongoose.Schema({
 });
 
 const Note = mongoose.model("Note", noteSchema);
+
+app.get("/", (req, res) => {
+  res.send("Backend Running");
+});
 
 app.post("/notes", async (req, res) => {
   const note = new Note(req.body);
@@ -56,4 +52,10 @@ app.delete("/notes/:id", async (req, res) => {
   res.json({
     message: "Note Deleted"
   });
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
